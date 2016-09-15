@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cyrus.cyrus_microblog.activity.MainActivity">
+
+    <FrameLayout
+        android:id="@+id/fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider_gray"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
+        <RadioGroup
+            android:id="@+id/rg_tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb_home"
+                style="@style/RadioButtonBottomTab"
+                android:checked="true"
+                android:drawableTop="@drawable/icon_home"
+                android:text="@string/radio_button_home"/>
+
+            <RadioButton
+                android:id="@+id/rb_message"
+                style="@style/RadioButtonBottomTab"
+                android:drawableTop="@drawable/icon_message"
+                android:text="@string/radio_button_message"/>
+
+            <ImageButton
+                android:id="@+id/iv_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/correct_oran_sel"
+                android:padding="8dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/icon_add"/>
+
+            <RadioButton
+                android:id="@+id/rb_search"
+                style="@style/RadioButtonBottomTab"
+                android:drawableTop="@drawable/icon_square"
+                android:text="@string/radio_button_search"/>
+
+            <RadioButton
+                android:id="@+id/rb_user"
+                style="@style/RadioButtonBottomTab"
+                android:drawableTop="@drawable/icon_selfinfo"
+                android:text="@string/radio_button_user"/>
+        </RadioGroup>
+    </LinearLayout>
+
+</LinearLayout>

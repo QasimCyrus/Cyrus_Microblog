@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Cyrus_Microblog</string>
+    <string name="action_settings">Settings</string>
+    <string name="toast_auth_canceled">授权取消</string>
+    <string name="toast_auth_failed">授权失败</string>
+    <string name="toast_auth_success">授权成功</string>
+    <string name="radio_button_home">首页</string>
+    <string name="radio_button_message">消息</string>
+    <string name="radio_button_search">发现</string>
+    <string name="radio_button_user">我</string>
+    <string name="item_user_name">用户名</string>
+    <string name="item_time_origin">时间和来源</string>
+    <string name="item_content">微博内容</string>
+    <string name="item_report">转发</string>
+    <string name="item_comment">评论</string>
+    <string name="item_attitude">赞</string>
+    <string name="date_just_now">刚刚</string>
+    <string name="date_min_ago">分钟前</string>
+    <string name="date_hour_ago">小时前</string>
+    <string name="date_yesterday">昨天</string>
+</resources>

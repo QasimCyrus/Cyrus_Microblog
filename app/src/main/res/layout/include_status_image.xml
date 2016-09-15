@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="-20dp"
+    android:padding="16dp">
+
+    <com.cyrus.cyrus_microblog.widget.WrapHeightGridView
+        android:id="@+id/gv_images"
+        style="@style/GridViewImages"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/iv_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"/>
+</FrameLayout>
