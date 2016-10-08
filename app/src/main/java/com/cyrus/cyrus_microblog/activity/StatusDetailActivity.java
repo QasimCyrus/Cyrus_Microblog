@@ -10,10 +10,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -344,30 +346,90 @@ public class StatusDetailActivity extends BaseActivity implements
     }
 
     private void setImages(final Status status, ViewGroup vgContainer,
-                           GridView gvImgs, final ImageView ivImg) {
+                           WrapHeightGridView gvImgs, final ImageView ivImg) {
         if (status == null) {
             return;
         }
 
-        ArrayList<String> picUrls = status.pic_urls;
-        String picUrl = status.bmiddle_pic;
+        ArrayList<String> strPicUrls = status.pic_urls;
 
-        if (picUrls != null && picUrls.size() == 1) {
+        if (strPicUrls != null && strPicUrls.size() == 1) {
             vgContainer.setVisibility(View.VISIBLE);
             gvImgs.setVisibility(View.GONE);
             ivImg.setVisibility(View.VISIBLE);
+            ivImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    intent2ImageBrowserActivity(0, status);
+                }
+            });
 
-            mImageLoader.displayImage(picUrl, ivImg);
-        } else if (picUrls != null && picUrls.size() > 1) {
+            mImageLoader.displayImage(status.bmiddle_pic, ivImg);
+        } else if (strPicUrls != null && strPicUrls.size() > 1) {
             vgContainer.setVisibility(View.VISIBLE);
             gvImgs.setVisibility(View.VISIBLE);
             ivImg.setVisibility(View.GONE);
 
-            StatusGridImgsAdapter imagesAdapter = new StatusGridImgsAdapter(this, picUrls);
+            StatusGridImgsAdapter imagesAdapter = new StatusGridImgsAdapter(this, strPicUrls);
             gvImgs.setAdapter(imagesAdapter);
+            gvImgs.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    intent2ImageBrowserActivity(position, status);
+                }
+            });
+            setGridViewHeightBaseOnChildren(gvImgs);
         } else {
             vgContainer.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * 解决GridView高度显示不全的问题
+     *
+     * @param gvImages 要调整高度的GridView
+     */
+    private void setGridViewHeightBaseOnChildren(final WrapHeightGridView gvImages) {
+        //必须在View.post()方法中进行，否则会测量不到GridView和Adapter里面Item的高度
+        gvImages.post(new Runnable() {
+            @Override
+            public void run() {
+                ListAdapter adapter = gvImages.getAdapter();
+                if (adapter == null) {
+                    return;
+                }
+
+                int totalHeight;
+                int itemCount = adapter.getCount();
+                int spacingCount;
+                View itemView = adapter.getView(0, null, gvImages);
+                itemView.measure(0, 0);
+                int itemHeight = itemView.getMeasuredHeight();
+
+                if (itemCount <= 3) {
+                    totalHeight = itemHeight;
+                    spacingCount = 0;
+                } else if (itemCount <= 6) {
+                    totalHeight = itemHeight * 2;
+                    spacingCount = 1;
+                } else {
+                    totalHeight = itemHeight * 3;
+                    spacingCount = 2;
+                }
+
+                ViewGroup.LayoutParams params = gvImages.getLayoutParams();
+                params.height = totalHeight + gvImages.getHorizontalSpacing() * spacingCount;
+
+                gvImages.setLayoutParams(params);
+            }
+        });
+    }
+
+    private void intent2ImageBrowserActivity(int position, Status status) {
+        Intent intent = new Intent(mContext, ImageBrowserActivity.class);
+        intent.putExtra("mStatus", status);
+        intent.putExtra("mPosition", position);
+        mContext.startActivity(intent);
     }
 
     /**
@@ -468,18 +530,30 @@ public class StatusDetailActivity extends BaseActivity implements
             case R.id.iv_image:
                 break;
             case R.id.ll_share_bottom:
+                //跳转到写微博页面
+                intent2WriteStatusActivity();
                 break;
             case R.id.ll_comment_bottom:
                 // 跳转至写评论页面
-                Intent intent = new Intent(this, WriteCommentActivity.class);
-                intent.putExtra("mStatus", mStatus);
-                startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
+                intent2WriteCommentActivity();
                 break;
             case R.id.ll_like_bottom:
                 break;
             default:
                 break;
         }
+    }
+
+    private void intent2WriteCommentActivity() {
+        Intent intent = new Intent(this, WriteCommentActivity.class);
+        intent.putExtra("mStatus", mStatus);
+        startActivityForResult(intent, REQUEST_CODE_WRITE_COMMENT);
+    }
+
+    private void intent2WriteStatusActivity() {
+        Intent intent = new Intent(this, WriteStatusActivity.class);
+        intent.putExtra("mStatus", mStatus);
+        startActivity(intent);
     }
 
     @Override

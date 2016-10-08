@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.cyrus.cyrus_microblog.R;
 import com.cyrus.cyrus_microblog.utils.DateUtils;
+import com.cyrus.cyrus_microblog.utils.ImageOptHelper;
 import com.cyrus.cyrus_microblog.utils.StringUtils;
 import com.cyrus.cyrus_microblog.utils.ToastUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -72,7 +73,8 @@ public class StatusCommentAdapter extends BaseAdapter {
         Comment comment = getItem(position);
         User user = comment.user;
 
-        mImageLoader.displayImage(user.profile_image_url, holder.iv_avatar);
+        mImageLoader.displayImage(user.profile_image_url, holder.iv_avatar,
+                ImageOptHelper.getAvatarOptions());
         holder.tv_subhead.setText(user.name);
         holder.tv_caption.setText(DateUtils.getShortTime(mContext, comment.created_at));
         SpannableString weiboContent = StringUtils
@@ -93,12 +95,12 @@ public class StatusCommentAdapter extends BaseAdapter {
         mComments = comments;
     }
 
-    public static class ViewHolderList {
-        public LinearLayout ll_comments;
-        public ImageView iv_avatar;
-        public TextView tv_subhead;
-        public TextView tv_caption;
-        public TextView tv_comment;
+    private static class ViewHolderList {
+        LinearLayout ll_comments;
+        ImageView iv_avatar;
+        TextView tv_subhead;
+        TextView tv_caption;
+        TextView tv_comment;
     }
 
 }

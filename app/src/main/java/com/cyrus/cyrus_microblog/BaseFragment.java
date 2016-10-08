@@ -13,6 +13,7 @@ import com.cyrus.cyrus_microblog.activity.MainActivity;
  */
 public class BaseFragment extends Fragment {
 
+    protected String TAG;
     protected MainActivity mMainActivity;
 
     @Override
@@ -20,6 +21,7 @@ public class BaseFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mMainActivity = (MainActivity) getActivity();
+        TAG = this.getClass().getSimpleName();
     }
 
     protected void intent2Activity(Class<? extends Activity> targetActivity) {

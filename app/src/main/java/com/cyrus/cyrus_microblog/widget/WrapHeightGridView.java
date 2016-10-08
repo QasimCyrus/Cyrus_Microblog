@@ -5,6 +5,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.GridView;
 
+/**
+ * 自适应高度的GridView，解决ListView中嵌套GridView导致GridView只显示一行的问题
+ */
 public class WrapHeightGridView extends GridView {
 
     private OnTouchInvalidPositionListener mTouchInvalidPosListener;
@@ -21,19 +24,19 @@ public class WrapHeightGridView extends GridView {
         super(context);
     }
 
-    /**
-     * 重新测定GridView的宽和高，使其符合在ListView中的高度，避免显示不全
-     *
-     * @param widthMeasureSpec  原先传入的宽
-     * @param heightMeasureSpec 原先传入的高
-     */
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int heightSpec = MeasureSpec.makeMeasureSpec(
-                Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
-
-        super.onMeasure(widthMeasureSpec, heightSpec);
-    }
+//    /**
+//     * 重新测定GridView的宽和高，使其符合在ListView中的高度，避免显示不全
+//     *
+//     * @param widthMeasureSpec  原先传入的宽
+//     * @param heightMeasureSpec 原先传入的高
+//     */
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//        int heightSpec = MeasureSpec.makeMeasureSpec(
+//                Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
+//
+//        super.onMeasure(widthMeasureSpec, heightSpec);
+//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {

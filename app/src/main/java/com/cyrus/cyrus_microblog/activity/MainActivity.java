@@ -49,7 +49,7 @@ public class MainActivity extends BaseActivity {
         mIvAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                intent2Activity(WriteStatusActivity.class);
             }
         });
     }

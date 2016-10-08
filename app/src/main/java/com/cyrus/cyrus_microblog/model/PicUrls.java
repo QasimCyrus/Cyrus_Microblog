@@ -2,41 +2,53 @@ package com.cyrus.cyrus_microblog.model;
 
 import android.text.TextUtils;
 
-public class PicUrls {
-	private static final String BMIDDLE_URL = "http://ww3.sinaimg.cn/bmiddle";
-	private static final String ORIGINAL_URL = "http://ww3.sinaimg.cn/large";
+import java.io.Serializable;
+
+
+public class PicUrls implements Serializable {
+	// 中等质量图片url前缀
+	private static final String BMIDDLE_URL = "http://ww3.sinaimg.cn/bmiddle/";
+	// 原质量图片url前缀
+	private static final String ORIGINAL_URL = "http://ww3.sinaimg.cn/large/";
 	
-	private String thumbnail_pic;
-	private String bmiddle_pic;
-	private String original_pic;
+	private String mThumbnailPic;
+	private String mBmiddlePic;
+	private String mOriginalPic;
 
-	private String getImageId() {
-		int indexOf = thumbnail_pic.lastIndexOf("/");
-		return thumbnail_pic.substring(indexOf);
+	public PicUrls(String urlStr) {
+		mThumbnailPic = urlStr;
+	}
+
+	/**
+	 * 从缩略图url中截取末尾的图片id,用于和拼接成其他质量图片url
+	 */
+	public String getImageId() {
+		int indexOf = mThumbnailPic.lastIndexOf("/") + 1;
+		return mThumbnailPic.substring(indexOf);
 	}
 	
-	public String getThumbnail_pic() {
-		return thumbnail_pic;
+	public String getThumbnailPic() {
+		return mThumbnailPic;
 	}
 
-	public void setThumbnail_pic(String thumbnail_pic) {
-		this.thumbnail_pic = thumbnail_pic;
+	public void setThumbnailPic(String thumbnailPic) {
+		this.mThumbnailPic = thumbnailPic;
 	}
 
-	public String getBmiddle_pic() {
-		return TextUtils.isEmpty(bmiddle_pic) ? BMIDDLE_URL + getImageId() : bmiddle_pic;
+	public String getBmiddlePic() {
+		return TextUtils.isEmpty(mBmiddlePic) ? BMIDDLE_URL + getImageId() : mBmiddlePic;
 	}
 
-	public void setBmiddle_pic(String bmiddle_pic) {
-		this.bmiddle_pic = bmiddle_pic;
+	public void setBmiddlePic(String bmiddlePic) {
+		this.mBmiddlePic = bmiddlePic;
 	}
 
-	public String getOriginal_pic() {
-		return TextUtils.isEmpty(original_pic) ? ORIGINAL_URL + getImageId() : original_pic;
+	public String getOriginalPic() {
+		return TextUtils.isEmpty(mOriginalPic) ? ORIGINAL_URL + getImageId() : mOriginalPic;
 	}
 
-	public void setOriginal_pic(String original_pic) {
-		this.original_pic = original_pic;
+	public void setOriginalPic(String originalPic) {
+		this.mOriginalPic = originalPic;
 	}
 
 }

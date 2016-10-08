@@ -7,8 +7,7 @@
         android:id="@+id/iv_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleType="centerCrop" >
-    </ImageView>
+        android:scaleType="centerCrop" />
 
     <ImageView
         android:id="@+id/iv_delete_image"

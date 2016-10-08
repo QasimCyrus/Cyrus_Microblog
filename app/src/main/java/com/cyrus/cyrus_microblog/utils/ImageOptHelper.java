@@ -9,7 +9,7 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 public class ImageOptHelper {
 
     public static DisplayImageOptions getImgOptions() {
-        DisplayImageOptions imgOptions = new DisplayImageOptions.Builder()
+        return new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
@@ -17,12 +17,11 @@ public class ImageOptHelper {
                 .showImageForEmptyUri(R.drawable.timeline_image_loading)
                 .showImageOnFail(R.drawable.timeline_image_failure)
                 .build();
-        return imgOptions;
     }
 
 
     public static DisplayImageOptions getAvatarOptions() {
-        DisplayImageOptions avatarOptions = new DisplayImageOptions.Builder()
+        return new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
@@ -31,21 +30,19 @@ public class ImageOptHelper {
                 .showImageOnFail(R.drawable.avatar_default)
                 .displayer(new RoundedBitmapDisplayer(999))
                 .build();
-        return avatarOptions;
     }
 
 
     public static DisplayImageOptions getCornerOptions(int cornerRadiusPixels) {
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
+        return new DisplayImageOptions.Builder()
                 .cacheOnDisk(true)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .showImageOnLoading(R.drawable.timeline_image_loading)
                 .showImageForEmptyUri(R.drawable.timeline_image_loading)
-                .showImageOnFail(R.drawable.timeline_image_loading)
+                .showImageOnFail(R.drawable.timeline_image_failure)
                 .displayer(new RoundedBitmapDisplayer(cornerRadiusPixels))
                 .build();
-        return options;
     }
 
 }

@@ -7,6 +7,25 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="DialogCommon" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <!-- 背景透明 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowContentOverlay">@null</item>
+        <!-- 对话框是否有遮盖 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="DialogOtherTran" parent="@style/DialogCommon">
+        <!-- 对话框以外地方是否自动变暗 -->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <style name="TextViewHeadline">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -57,6 +76,11 @@
     <style name="ListViewLineDivider" parent="ListViewCommon">
         <item name="android:divider">@color/divider_gray</item>
         <item name="android:dividerHeight">1px</item>
+    </style>
+
+    <style name="ListViewCard" parent="ListViewCommon">
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">8dp</item>
     </style>
 
     <style name="RadioButtonBottomTab">

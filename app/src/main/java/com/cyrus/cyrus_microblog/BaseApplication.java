@@ -8,14 +8,17 @@ import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.sina.weibo.sdk.openapi.models.User;
 
 /**
  * 在Application创建时进行第三方库的配置
  * 并将该类配置到AndroidManifest.xml中
- *
+ * <p>
  * Created by Cyrus on 2016/9/2.
  */
 public class BaseApplication extends Application {
+
+    public User mCurrentUser;
 
     @Override
     public void onCreate() {

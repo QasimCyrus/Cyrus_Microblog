@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId "com.cyrus.cyrus_microblog"
         minSdkVersion 15
@@ -28,7 +28,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
     compile project(':WeiboSDK')
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.github.userswlwork:pull-to-refresh:1.0.0'

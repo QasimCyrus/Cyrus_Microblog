@@ -49,6 +49,8 @@ public class User implements Serializable {
     public String url;
     /** 用户头像地址，50×50像素 */
     public String profile_image_url;
+    /** 用户封面地址 */
+    public String cover_image_phone;
     /** 用户的微博统一URL地址 */
     public String profile_url;
     /** 用户的个性化域名 */
@@ -131,6 +133,7 @@ public class User implements Serializable {
         user.description        = jsonObject.optString("description", "");
         user.url                = jsonObject.optString("url", "");
         user.profile_image_url  = jsonObject.optString("profile_image_url", "");
+        user.cover_image_phone  = jsonObject.optString("cover_image_phone", "");
         user.profile_url        = jsonObject.optString("profile_url", "");
         user.domain             = jsonObject.optString("domain", "");
         user.weihao             = jsonObject.optString("weihao", "");

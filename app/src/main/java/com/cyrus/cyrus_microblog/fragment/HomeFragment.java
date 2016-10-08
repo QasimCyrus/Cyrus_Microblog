@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.cyrus.cyrus_microblog.BaseFragment;
@@ -23,7 +24,7 @@ import com.sina.weibo.sdk.openapi.models.StatusList;
 import java.util.ArrayList;
 
 /**
- * 展示主页内容的Fragment，依附于MainActivity上
+ * 展示主页内容，依附于MainActivity上
  * <p>
  * Created by Cyrus on 2016/9/2.
  */
@@ -85,7 +86,7 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void initRefreshListView(View view) {
-        mRefreshListView = (PullToRefreshListView) view.findViewById(R.id.plv_home);
+        mRefreshListView = (PullToRefreshListView) view.findViewById(R.id.rlv_home);
         mFootView = View.inflate(mMainActivity, R.layout.footview_loading, null);
         mStatusAdapter = new StatusAdapter(mMainActivity, mStatuses);
         mRefreshListView.setAdapter(mStatusAdapter);
@@ -99,13 +100,13 @@ public class HomeFragment extends BaseFragment {
             }
         });
         //上拉加载
-        mRefreshListView.setOnLastItemVisibleListener(
-                new PullToRefreshBase.OnLastItemVisibleListener() {
-                    @Override
-                    public void onLastItemVisible() {
-                        loadStatus(++mCurPage);
-                    }
-                });
+        mRefreshListView.setOnLastItemVisibleListener(new PullToRefreshBase
+                .OnLastItemVisibleListener() {
+            @Override
+            public void onLastItemVisible() {
+                loadStatus(++mCurPage);
+            }
+        });
     }
 
     private void initTitleBar(View view) {
@@ -119,14 +120,19 @@ public class HomeFragment extends BaseFragment {
             public void onComplete(String s) {
                 mStatusList = StatusList.parse(s);
                 if (mStatusList != null) {
+                    ProgressBar pbLoding = (ProgressBar)
+                            mFootView.findViewById(R.id.pb_loading);
+                    TextView tvFoot = (TextView)
+                            mFootView.findViewById(R.id.tv_foot);
+
                     if (mStatusList.statusList != null) {
                         //设置footView视图
-                        if (mFootView.findViewById(R.id.pb_loading).getVisibility() == View.GONE) {
-                            mFootView.findViewById(R.id.pb_loading).setVisibility(View.VISIBLE);
+                        if (pbLoding.getVisibility() == View.GONE) {
+                            pbLoding.setVisibility(View.VISIBLE);
                         }
-                        if (((TextView) mFootView.findViewById(R.id.tv_foot)).getText()
-                                .equals("没有更多")) {
-                            ((TextView) mFootView.findViewById(R.id.tv_foot)).setText("加载更多");
+
+                        if ("没有更多".equals(tvFoot.getText())) {
+                            tvFoot.setText("加载更多");
                         }
 
                         if (page == 1) {
@@ -136,9 +142,10 @@ public class HomeFragment extends BaseFragment {
                         mStatusAdapter.setStatuses(mStatuses);
                         mStatusAdapter.notifyDataSetChanged();
                     } else {
-                        mFootView.findViewById(R.id.pb_loading).setVisibility(View.GONE);
-                        ((TextView) mFootView.findViewById(R.id.tv_foot)).setText("没有更多");
+                        pbLoding.setVisibility(View.GONE);
+                        tvFoot.setText("没有更多");
                     }
+
                     mRefreshListView.onRefreshComplete();
 
                     if (mCurPage < mStatusList.total_number) {

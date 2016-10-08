@@ -22,7 +22,6 @@
             <EditText
                 android:id="@+id/et_write_status"
                 style="@style/TextViewSubhead"
-                android:layout_width="match_parent"
                 android:background="@color/transparent"
                 android:gravity="top"
                 android:hint="写评论..."
@@ -111,8 +110,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/vp_emotion_dashboard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </android.support.v4.view.ViewPager>
+            android:layout_height="wrap_content"/>
 
         <RadioGroup
             android:id="@+id/rg_emotion_dashboard"

@@ -1,28 +1,40 @@
 package com.cyrus.cyrus_microblog.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cyrus.cyrus_microblog.R;
+import com.cyrus.cyrus_microblog.activity.ImageBrowserActivity;
 import com.cyrus.cyrus_microblog.activity.StatusDetailActivity;
 import com.cyrus.cyrus_microblog.activity.WriteCommentActivity;
+import com.cyrus.cyrus_microblog.activity.WriteStatusActivity;
+import com.cyrus.cyrus_microblog.api.StatusesApi;
+import com.cyrus.cyrus_microblog.api.UsersApi;
+import com.cyrus.cyrus_microblog.constants.AccessTokenKeeper;
 import com.cyrus.cyrus_microblog.utils.DateUtils;
+import com.cyrus.cyrus_microblog.utils.DialogUtils;
+import com.cyrus.cyrus_microblog.utils.ImageOptHelper;
 import com.cyrus.cyrus_microblog.utils.StringUtils;
 import com.cyrus.cyrus_microblog.utils.ToastUtils;
 import com.cyrus.cyrus_microblog.widget.WrapHeightGridView;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.models.Status;
 import com.sina.weibo.sdk.openapi.models.User;
 
@@ -37,11 +49,13 @@ public class StatusAdapter extends BaseAdapter {
     private Context mContext;
     private List<Status> mStatuses;
     private ImageLoader mImageLoader;
+    private StatusesApi mStatusesApi;
 
     public StatusAdapter(Context context, List<Status> statuses) {
         mContext = context;
         mStatuses = statuses;
         mImageLoader = ImageLoader.getInstance();
+        mStatusesApi = new StatusesApi(mContext);
     }
 
     public void setStatuses(List<Status> statuses) {
@@ -130,7 +144,8 @@ public class StatusAdapter extends BaseAdapter {
         final Status status = getItem(position);
         User user = status.user;
 
-        mImageLoader.displayImage(user.profile_image_url, holder.iv_avatar);
+        mImageLoader.displayImage(user.profile_image_url, holder.iv_avatar,
+                ImageOptHelper.getAvatarOptions());
         holder.tv_subhead.setText(user.name);
         String sourceStr = String.format("%s 来自 %s",//日期、来源
                 DateUtils.getShortTime(mContext, status.created_at),
@@ -184,21 +199,6 @@ public class StatusAdapter extends BaseAdapter {
         holder.gv_images.setFocusable(false);
         holder.gv_retweeted_images.setFocusable(false);
 
-        //设置图片的点击事件
-        holder.iv_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtils.showToast(mContext, "Image", Toast.LENGTH_SHORT);
-            }
-        });
-
-        holder.iv_retweeted_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtils.showToast(mContext, "RetweetedImage", Toast.LENGTH_SHORT);
-            }
-        });
-
         //设置进入微博的点击事件，点击多图的空白处也会进入页面
         holder.ll_card_content.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,6 +217,15 @@ public class StatusAdapter extends BaseAdapter {
                         return false;
                     }
                 });
+
+        //设置微博的长按事件
+        holder.ll_card_content.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                showStatusOperationDialog(status);
+                return true;
+            }
+        });
 
         //设置进入被转发微博的点击事件，点击多图的空白处也会进入页面
         holder.include_retweeted_status.setOnClickListener(new View.OnClickListener() {
@@ -238,11 +247,11 @@ public class StatusAdapter extends BaseAdapter {
                 }
         );
 
-        //设置分享的点击事件
+        //设置转发的点击事件
         holder.ll_share_bottom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ToastUtils.showToast(mContext, "转个发~", Toast.LENGTH_SHORT);
+                intent2WriteStatusActivity(status);
             }
         });
 
@@ -271,6 +280,105 @@ public class StatusAdapter extends BaseAdapter {
         return convertView;
     }
 
+    private void showStatusOperationDialog(final Status status) {
+        new UsersApi(mContext).userShow(Long.parseLong(AccessTokenKeeper
+                .readAccessToken(mContext).getUid()), new RequestListener() {
+            @Override
+            public void onComplete(String s) {
+                User currentUser = User.parse(s);
+                if (currentUser != null) {
+                    if (currentUser.id.equals(status.user.id)) {
+                        showSelfStatusOperationDialog(status);
+                    } else {
+                        showOtherStatusOperationDialog(status);
+                    }
+                }
+            }
+
+            @Override
+            public void onWeiboException(WeiboException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    private void showOtherStatusOperationDialog(final Status status) {
+        final List<String> list = new ArrayList<>();
+        list.add("转发");
+        list.add("评论");
+        if (status.retweeted_status != null) {
+            list.add("转发原微博");
+        }
+        DialogUtils.showListDialog(mContext, null, list,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        switch (which) {
+                            case 0:
+                                intent2WriteStatusActivity(status);
+                                break;
+                            case 1:
+                                intent2WriteCommentActivity(status);
+                                break;
+                            case 2:
+                                intent2WriteStatusActivity(status.retweeted_status);
+                                break;
+                        }
+                    }
+                });
+    }
+
+    private void showSelfStatusOperationDialog(final Status status) {
+        final List<String> list = new ArrayList<>();
+        list.add("转发");
+        list.add("评论");
+        list.add("删除");
+        if (status.retweeted_status != null) {
+            list.add("转发原微博");
+        }
+        DialogUtils.showListDialog(mContext, null, list,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        switch (which) {
+                            case 0:
+                                intent2WriteStatusActivity(status);
+                                break;
+                            case 1:
+                                intent2WriteCommentActivity(status);
+                                break;
+                            case 2:
+                                mStatusesApi.statusDestory(Long.parseLong(status.id),
+                                        new RequestListener() {
+                                            @Override
+                                            public void onComplete(String s) {
+                                                mStatuses.remove(status);
+                                                notifyDataSetChanged();
+                                            }
+
+                                            @Override
+                                            public void onWeiboException(WeiboException e) {
+                                                e.printStackTrace();
+                                            }
+                                        });
+                                break;
+                            case 3:
+                                intent2WriteStatusActivity(status.retweeted_status);
+                                break;
+                        }
+                    }
+                });
+    }
+
+    private void intent2WriteStatusActivity(Status status) {
+        Intent intent = new Intent(mContext, WriteStatusActivity.class);
+        intent.putExtra("mStatus", status);
+        mContext.startActivity(intent);
+    }
+
     private void intent2WriteCommentActivity(Status status) {
         Intent intent = new Intent(mContext, WriteCommentActivity.class);
         intent.putExtra("mStatus", status);
@@ -290,56 +398,115 @@ public class StatusAdapter extends BaseAdapter {
         mContext.startActivity(intent);
     }
 
-    private void setImages(Status status, FrameLayout imgContainer,
-                           WrapHeightGridView gv_images, ImageView iv_image) {
+    private void setImages(final Status status, FrameLayout imgContainer,
+                           WrapHeightGridView gvImages, ImageView ivImage) {
         ArrayList<String> pic_urls = status.pic_urls;
-        String thumbnail_pic = status.thumbnail_pic;
 
         if (pic_urls != null && pic_urls.size() > 1) {
             imgContainer.setVisibility(View.VISIBLE);
-            gv_images.setVisibility(View.VISIBLE);
-            iv_image.setVisibility(View.GONE);
+            gvImages.setVisibility(View.VISIBLE);
+            ivImage.setVisibility(View.GONE);
 
             StatusGridImgsAdapter gvAdapter = new StatusGridImgsAdapter(mContext, pic_urls);
-            gv_images.setAdapter(gvAdapter);
+            gvImages.setAdapter(gvAdapter);
+            gvImages.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent intent = new Intent(mContext, ImageBrowserActivity.class);
+                    intent.putExtra("mStatus", status);
+                    intent.putExtra("mPosition", position);
+                    mContext.startActivity(intent);
+                }
+            });
+            setGridViewHeightBaseOnChildren(gvImages);
         } else if (pic_urls != null && pic_urls.size() == 1) {
             imgContainer.setVisibility(View.VISIBLE);
-            gv_images.setVisibility(View.GONE);
-            iv_image.setVisibility(View.VISIBLE);
+            gvImages.setVisibility(View.GONE);
+            ivImage.setVisibility(View.VISIBLE);
 
-            mImageLoader.displayImage(thumbnail_pic, iv_image);
+            ivImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, ImageBrowserActivity.class);
+                    intent.putExtra("mStatus", status);
+                    mContext.startActivity(intent);
+                }
+            });
+
+            mImageLoader.displayImage(status.bmiddle_pic, ivImage);
         } else {
             imgContainer.setVisibility(View.GONE);
         }
     }
 
-    public static class ViewHolder {
-        public LinearLayout ll_card_content;
-        public ImageView iv_avatar;
-        public RelativeLayout rl_content;
-        public TextView tv_subhead;
-        public TextView tv_caption;
+    /**
+     * 解决GridView高度显示不全的问题
+     *
+     * @param gvImages 要调整高度的GridView
+     */
+    private void setGridViewHeightBaseOnChildren(final WrapHeightGridView gvImages) {
+        //必须在View.post()方法中进行，否则会测量不到GridView和Adapter里面Item的高度
+        gvImages.post(new Runnable() {
+            @Override
+            public void run() {
+                ListAdapter adapter = gvImages.getAdapter();
+                if (adapter == null) {
+                    return;
+                }
 
-        public TextView tv_content;
-        public FrameLayout include_status_image;
-        public WrapHeightGridView gv_images;
-        public ImageView iv_image;
+                int totalHeight;
+                int itemCount = adapter.getCount();
+                int spacingCount;
+                View itemView = adapter.getView(0, null, gvImages);
+                itemView.measure(0, 0);
+                int itemHeight = itemView.getMeasuredHeight();
 
-        public LinearLayout include_retweeted_status;
-        public TextView tv_retweeted_content;
-        public FrameLayout include_retweeted_status_image;
-        public WrapHeightGridView gv_retweeted_images;
-        public ImageView iv_retweeted_image;
+                if (itemCount <= 3) {
+                    totalHeight = itemHeight;
+                    spacingCount = 0;
+                } else if (itemCount <= 6) {
+                    totalHeight = itemHeight * 2;
+                    spacingCount = 1;
+                } else {
+                    totalHeight = itemHeight * 3;
+                    spacingCount = 2;
+                }
 
-        public LinearLayout ll_share_bottom;
-        public ImageView iv_share_bottom;
-        public TextView tv_share_bottom;
-        public LinearLayout ll_comment_bottom;
-        public ImageView iv_comment_bottom;
-        public TextView tv_comment_bottom;
-        public LinearLayout ll_like_bottom;
-        public ImageView iv_like_bottom;
-        public TextView tv_like_bottom;
+                ViewGroup.LayoutParams params = gvImages.getLayoutParams();
+                params.height = totalHeight + gvImages.getHorizontalSpacing() * spacingCount;
+
+                gvImages.setLayoutParams(params);
+            }
+        });
+    }
+
+    private static class ViewHolder {
+        LinearLayout ll_card_content;
+        ImageView iv_avatar;
+        RelativeLayout rl_content;
+        TextView tv_subhead;
+        TextView tv_caption;
+
+        TextView tv_content;
+        FrameLayout include_status_image;
+        WrapHeightGridView gv_images;
+        ImageView iv_image;
+
+        LinearLayout include_retweeted_status;
+        TextView tv_retweeted_content;
+        FrameLayout include_retweeted_status_image;
+        WrapHeightGridView gv_retweeted_images;
+        ImageView iv_retweeted_image;
+
+        LinearLayout ll_share_bottom;
+        ImageView iv_share_bottom;
+        TextView tv_share_bottom;
+        LinearLayout ll_comment_bottom;
+        ImageView iv_comment_bottom;
+        TextView tv_comment_bottom;
+        LinearLayout ll_like_bottom;
+        ImageView iv_like_bottom;
+        TextView tv_like_bottom;
     }
 
 }
