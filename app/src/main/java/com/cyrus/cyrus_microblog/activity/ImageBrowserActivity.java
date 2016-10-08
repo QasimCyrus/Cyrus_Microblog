@@ -1,5 +1,7 @@
 package com.cyrus.cyrus_microblog.activity;
 
+import android.Manifest;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,18 +16,25 @@ import com.cyrus.cyrus_microblog.BaseActivity;
 import com.cyrus.cyrus_microblog.R;
 import com.cyrus.cyrus_microblog.adapter.ImageBrowserAdapter;
 import com.cyrus.cyrus_microblog.model.PicUrls;
+import com.cyrus.cyrus_microblog.utils.PermissionsChecker;
 import com.sina.weibo.sdk.openapi.models.Status;
 
 import java.util.ArrayList;
 
 public class ImageBrowserActivity extends BaseActivity implements OnClickListener {
+    private static final String PERMISSION_WRITE_EXTERNAL_STORAGE
+            = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
     private ViewPager mVpImageBrowser;
     private TextView mTvImageIndex;
     private Button mBtnSave;
 
     private Status mStatus;
-    private int mPosition;
     private ImageBrowserAdapter mImageBrowserAdapter;
+    private PermissionsChecker mPermissionsChecker;
+
+    private int mPosition;
+    private boolean mHasExternalStoragePermissionGot;
     private ArrayList<String> mStrImgUrls;
     private ArrayList<PicUrls> mImgUrls;
 
@@ -40,6 +49,7 @@ public class ImageBrowserActivity extends BaseActivity implements OnClickListene
     }
 
     private void initData() {
+        mPermissionsChecker = new PermissionsChecker(this);
         mStatus = (Status) getIntent().getSerializableExtra("mStatus");
         mPosition = getIntent().getIntExtra("mPosition", 0);
         // 获取图片数据集合(单图也有对应的集合,集合的size为1)
@@ -95,26 +105,56 @@ public class ImageBrowserActivity extends BaseActivity implements OnClickListene
 
         switch (v.getId()) {
             case R.id.btn_save:
-                Bitmap bitmap = mImageBrowserAdapter.getBitmap(mVpImageBrowser.getCurrentItem());
+                checkExternalStoragePermission();
+                if (mHasExternalStoragePermissionGot) {
+                    Bitmap bitmap = mImageBrowserAdapter.getBitmap(mVpImageBrowser.getCurrentItem());
 
-                String fileName = "img-ori-" + picUrl.getImageId();
+                    String fileName = "img-ori-" + picUrl.getImageId();
 
-                String title = fileName.substring(0, fileName.lastIndexOf("."));
-                String insertImage = MediaStore.Images.Media.insertImage(
-                        getContentResolver(), bitmap, title, "MicroblogImage");
-                if (insertImage == null) {
-                    showToast("图片保存失败");
+                    String title = fileName.substring(0, fileName.lastIndexOf("."));
+                    String insertImage = MediaStore.Images.Media.insertImage(
+                            getContentResolver(), bitmap, title, "MicroblogImage");
+                    if (insertImage == null) {
+                        showToast("图片保存失败");
+                    } else {
+                        showToast("图片保存成功");
+                    }
+
+//                    try {
+//                        ImageUtils.saveFile(this, bitmap, fileName);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
                 } else {
-                    showToast("图片保存成功");
+                    showToast("需要读写SD卡的权限");
                 }
 
-//			try {
-//				ImageUtils.saveFile(this, bitmap, fileName);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-
                 break;
+        }
+    }
+
+    private void checkExternalStoragePermission() {
+        if (mPermissionsChecker.lacksPermissions(PERMISSION_WRITE_EXTERNAL_STORAGE)) {
+            mHasExternalStoragePermissionGot = false;
+            Intent intent = new Intent(this, PermissionsActivity.class);
+            intent.putExtra(PermissionsActivity.EXTRA_EXTERNAL,
+                    new String[]{PERMISSION_WRITE_EXTERNAL_STORAGE});
+            startActivityForResult(intent, PermissionsActivity.PERMISSIONS_REQUEST_CODE);
+        } else {
+            mHasExternalStoragePermissionGot = true;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PermissionsActivity.PERMISSIONS_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                mHasExternalStoragePermissionGot = true;
+            } else if (resultCode == RESULT_CANCELED) {
+                mHasExternalStoragePermissionGot = false;
+            }
         }
     }
 }

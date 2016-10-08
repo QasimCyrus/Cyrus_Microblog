@@ -1,5 +1,8 @@
 package com.cyrus.cyrus_microblog.model;
 
+/**
+ * “我”界面的菜单列表项
+ */
 public class UserItem {
 
 	public UserItem(boolean isShowTopDivider, int leftImg, String subhead, String caption) {

@@ -6,6 +6,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 表情管理类
+ */
 public class Emotion implements Serializable {
 
     public static Map<String, Integer> emojiMap;

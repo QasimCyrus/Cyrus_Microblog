@@ -45,21 +45,23 @@ public class DialogUtils {
     /**
      * 确认dialog
      *
-     * @param context         上下文
-     * @param title           标题名称,内容为空时即不设置标题
-     * @param msg             确认信息内容
-     * @param onClickListener 确定按钮监听
+     * @param context                上下文
+     * @param title                  标题名称,内容为空时即不设置标题
+     * @param msg                    确认信息内容
+     * @param confirmOnClickListener 确定按钮监听
+     * @param cancelOnClickListener  取消按钮监听
      * @return
      */
-    public static AlertDialog showConfirmDialog(Context context, String title,
-                                                String msg, OnClickListener onClickListener) {
+    public static AlertDialog showConfirmDialog(Context context, String title, String msg,
+                                                OnClickListener confirmOnClickListener,
+                                                OnClickListener cancelOnClickListener) {
         Builder builder = new Builder(context);
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title);
         }
         AlertDialog dialog = builder.setMessage(msg)
-                .setPositiveButton("确认", onClickListener)
-                .setNegativeButton("取消", null).show();
+                .setPositiveButton("确认", confirmOnClickListener)
+                .setNegativeButton("取消", cancelOnClickListener).show();
         return dialog;
     }
 

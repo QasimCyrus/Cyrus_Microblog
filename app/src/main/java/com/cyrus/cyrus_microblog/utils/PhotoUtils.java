@@ -786,7 +786,9 @@ public class PhotoUtils {
 				destWidth = (int) (srcWidth / ratio);
 			}
 			BitmapFactory.Options newOpts = new BitmapFactory.Options();
-			// 缩放的比例，缩放是很难按准备的比例进行缩放的，目前我只发现只能通过inSampleSize来进行缩放，其值表明缩放的倍数，SDK中建议其值是2的指数值
+			// 缩放的比例，缩放是很难按准备的比例进行缩放的，
+			// 目前我只发现只能通过inSampleSize来进行缩放，其值表明缩放的倍数，
+			// SDK中建议其值是2的指数值
 			newOpts.inSampleSize = (int) ratio + 1;
 			// inJustDecodeBounds设为false表示把图片读进内存中
 			newOpts.inJustDecodeBounds = false;

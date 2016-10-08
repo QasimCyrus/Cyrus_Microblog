@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="weibosdkcore_release">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/WeiboSDK/libs/weibosdkcore_release.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

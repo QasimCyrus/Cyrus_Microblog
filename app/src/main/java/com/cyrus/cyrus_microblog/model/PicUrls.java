@@ -4,7 +4,9 @@ import android.text.TextUtils;
 
 import java.io.Serializable;
 
-
+/**
+ * 存放微博图片的url地址
+ */
 public class PicUrls implements Serializable {
 	// 中等质量图片url前缀
 	private static final String BMIDDLE_URL = "http://ww3.sinaimg.cn/bmiddle/";

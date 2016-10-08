@@ -137,4 +137,5 @@ public class ImageBrowserAdapter extends PagerAdapter {
 
         return bitmap;
     }
+
 }
