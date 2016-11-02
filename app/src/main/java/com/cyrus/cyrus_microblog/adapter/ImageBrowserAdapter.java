@@ -26,7 +26,6 @@ public class ImageBrowserAdapter extends PagerAdapter {
     private Activity mActivity;
     private ArrayList<PicUrls> mPicUrls;
     private ArrayList<View> mPicViews;
-
     private ImageLoader mImageLoader;
 
     public ImageBrowserAdapter(Activity context, ArrayList<PicUrls> picUrls) {
@@ -82,9 +81,25 @@ public class ImageBrowserAdapter extends PagerAdapter {
                 /*
                  * 设置ImageView的宽度为屏幕宽度，高度根据图片高度来调节，
                  * 如果图片高度不大于屏幕高度，则ImageView的高度使用屏幕高度。
+                 *
+                 * 图片如果太大，可能会导致卡顿，所以压缩画质
+                 * 或者取消硬件加速
                  */
-                float scale = (float) loadedImage.getHeight() / loadedImage.getWidth();
+//                if (loadedImage.getHeight() > 800) {
+//                    BitmapFactory.Options opt = new BitmapFactory.Options();
+//                    opt.inSampleSize = 2;
+//                    try {
+//                        ByteArrayOutputStream os = new ByteArrayOutputStream();
+//                        loadedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+//                        loadedImage = BitmapFactory.decodeByteArray(
+//                                os.toByteArray(), 0, os.toByteArray().length, opt);
+//                        os.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
+                float scale = (float) loadedImage.getHeight() / loadedImage.getWidth();
                 int screenWidthPixels = DisplayUtils.getScreenWidthPixels(mActivity);
                 int screenHeightPixels = DisplayUtils.getScreenHeightPixels(mActivity);
                 int height = (int) (screenWidthPixels * scale);
@@ -96,6 +111,7 @@ public class ImageBrowserAdapter extends PagerAdapter {
                 LayoutParams params = ivImageBrowser.getLayoutParams();
                 params.height = height;
                 params.width = screenWidthPixels;
+                ivImageBrowser.setLayoutParams(params);
 
                 ivImageBrowser.setImageBitmap(loadedImage);
                 ivImageBrowser.setOnClickListener(new View.OnClickListener() {

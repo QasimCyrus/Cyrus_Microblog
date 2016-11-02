@@ -28,7 +28,9 @@
         <activity android:name=".activity.WriteCommentActivity"/>
         <activity android:name=".activity.WriteStatusActivity"/>
         <activity android:name=".activity.UserInfoActivity"/>
-        <activity android:name=".activity.ImageBrowserActivity"/>
+        <activity
+            android:name=".activity.ImageBrowserActivity"
+            android:hardwareAccelerated="false"/>
         <activity android:name=".activity.PermissionsActivity"/>
         <!-- 必须注册在微博授权，分享微博时候用到 -->
         <activity

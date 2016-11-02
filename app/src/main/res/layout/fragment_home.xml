@@ -9,7 +9,7 @@
     <include layout="@layout/include_titlebar"/>
 
     <com.handmark.pulltorefresh.library.PullToRefreshListView
-        android:id="@+id/rlv_home"
+        android:id="@+id/plv_home"
         style="@style/ListViewCommon"
         android:dividerHeight="8dp"/>
 </LinearLayout>

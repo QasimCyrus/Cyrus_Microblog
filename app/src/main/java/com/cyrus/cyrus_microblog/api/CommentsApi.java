@@ -43,4 +43,19 @@ public class CommentsApi extends CommentsAPI {
     public void commentCreate(String comment, long id, RequestListener listener) {
         create(comment, id, true, listener);
     }
+
+    /**
+     * 回复一条评论。
+     *
+     * @param cid             需要回复的评论ID
+     * @param id              需要评论的微博ID
+     * @param comment         回复评论内容，内容不超过140个汉字
+     * @param without_mention 回复中是否自动加入“回复@用户名”，true：是、false：否，默认为false
+     * @param comment_ori     当评论转发微博时，是否评论给原微博，false：否、true：是，默认为false
+     * @param listener        异步请求回调接口
+     */
+    public void reply(long cid, long id, String comment, boolean without_mention, boolean comment_ori,
+                      RequestListener listener) {
+
+    }
 }

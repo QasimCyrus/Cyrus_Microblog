@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.cyrus.cyrus_microblog.R;
 import com.cyrus.cyrus_microblog.activity.ImageBrowserActivity;
 import com.cyrus.cyrus_microblog.activity.StatusDetailActivity;
+import com.cyrus.cyrus_microblog.activity.UserInfoActivity;
 import com.cyrus.cyrus_microblog.activity.WriteCommentActivity;
 import com.cyrus.cyrus_microblog.activity.WriteStatusActivity;
 import com.cyrus.cyrus_microblog.api.StatusesApi;
@@ -142,15 +143,30 @@ public class StatusAdapter extends BaseAdapter {
 
         // 绑定数据
         final Status status = getItem(position);
-        User user = status.user;
+        final User user = status.user;
 
         mImageLoader.displayImage(user.profile_image_url, holder.iv_avatar,
                 ImageOptHelper.getAvatarOptions());
+        holder.iv_avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent2UserInfoActivity(user);
+            }
+        });
+
         holder.tv_subhead.setText(user.name);
+        holder.tv_subhead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent2UserInfoActivity(user);
+            }
+        });
+
         String sourceStr = String.format("%s 来自 %s",//日期、来源
                 DateUtils.getShortTime(mContext, status.created_at),
                 Html.fromHtml(status.source));
         holder.tv_caption.setText(sourceStr);
+
         holder.tv_content.setText(StringUtils.getSpannableString(mContext,
                 holder.tv_content, status.text));
 
@@ -278,6 +294,12 @@ public class StatusAdapter extends BaseAdapter {
         });
 
         return convertView;
+    }
+
+    private void intent2UserInfoActivity(User user) {
+        Intent intent = new Intent(mContext, UserInfoActivity.class);
+        intent.putExtra("mUserName", user.name);
+        mContext.startActivity(intent);
     }
 
     private void showStatusOperationDialog(final Status status) {

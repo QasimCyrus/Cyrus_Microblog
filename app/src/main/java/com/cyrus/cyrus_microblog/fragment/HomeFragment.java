@@ -86,7 +86,7 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void initRefreshListView(View view) {
-        mRefreshListView = (PullToRefreshListView) view.findViewById(R.id.rlv_home);
+        mRefreshListView = (PullToRefreshListView) view.findViewById(R.id.plv_home);
         mFootView = View.inflate(mMainActivity, R.layout.footview_loading, null);
         mStatusAdapter = new StatusAdapter(mMainActivity, mStatuses);
         mRefreshListView.setAdapter(mStatusAdapter);
