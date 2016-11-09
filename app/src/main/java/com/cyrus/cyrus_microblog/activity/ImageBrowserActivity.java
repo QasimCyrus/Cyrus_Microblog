@@ -62,7 +62,7 @@ public class ImageBrowserActivity extends BaseActivity implements OnClickListene
     }
 
     private void initView() {
-        mVpImageBrowser = (ViewPager) findViewById(R.id.vp_image_brower);
+        mVpImageBrowser = (ViewPager) findViewById(R.id.vp_image_browser);
         mTvImageIndex = (TextView) findViewById(R.id.tv_image_index);
         mBtnSave = (Button) findViewById(R.id.btn_save);
         mBtnSave.setOnClickListener(this);

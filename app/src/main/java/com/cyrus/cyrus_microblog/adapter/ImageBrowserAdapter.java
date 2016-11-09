@@ -7,17 +7,13 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
 import com.cyrus.cyrus_microblog.R;
 import com.cyrus.cyrus_microblog.model.PicUrls;
-import com.cyrus.cyrus_microblog.utils.DisplayUtils;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
@@ -66,66 +62,67 @@ public class ImageBrowserAdapter extends PagerAdapter {
         DisplayImageOptions options = new DisplayImageOptions.Builder()
                 .imageScaleType(ImageScaleType.NONE)
                 .build();
-        mImageLoader.loadImage(url, options, new ImageLoadingListener() {
-            @Override
-            public void onLoadingStarted(String imageUri, View view) {
-            }
-
-            @Override
-            public void onLoadingFailed(String imageUri, View view,
-                                        FailReason failReason) {
-            }
-
-            @Override
-            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                /*
-                 * 设置ImageView的宽度为屏幕宽度，高度根据图片高度来调节，
-                 * 如果图片高度不大于屏幕高度，则ImageView的高度使用屏幕高度。
-                 *
-                 * 图片如果太大，可能会导致卡顿，所以压缩画质
-                 * 或者取消硬件加速
-                 */
-//                if (loadedImage.getHeight() > 800) {
-//                    BitmapFactory.Options opt = new BitmapFactory.Options();
-//                    opt.inSampleSize = 2;
-//                    try {
-//                        ByteArrayOutputStream os = new ByteArrayOutputStream();
-//                        loadedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
-//                        loadedImage = BitmapFactory.decodeByteArray(
-//                                os.toByteArray(), 0, os.toByteArray().length, opt);
-//                        os.close();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
+        mImageLoader.displayImage(url, ivImageBrowser, options);
+//        mImageLoader.loadImage(url, options, new ImageLoadingListener() {
+//            @Override
+//            public void onLoadingStarted(String imageUri, View view) {
+//            }
+//
+//            @Override
+//            public void onLoadingFailed(String imageUri, View view,
+//                                        FailReason failReason) {
+//            }
+//
+//            @Override
+//            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+//                /*
+//                 * 设置ImageView的宽度为屏幕宽度，高度根据图片高度来调节，
+//                 * 如果图片高度不大于屏幕高度，则ImageView的高度使用屏幕高度。
+//                 *
+//                 * 图片如果太大，可能会导致卡顿，所以压缩画质
+//                 * 或者取消硬件加速
+//                 */
+////                if (loadedImage.getHeight() > 800) {
+////                    BitmapFactory.Options opt = new BitmapFactory.Options();
+////                    opt.inSampleSize = 2;
+////                    try {
+////                        ByteArrayOutputStream os = new ByteArrayOutputStream();
+////                        loadedImage.compress(Bitmap.CompressFormat.JPEG, 100, os);
+////                        loadedImage = BitmapFactory.decodeByteArray(
+////                                os.toByteArray(), 0, os.toByteArray().length, opt);
+////                        os.close();
+////                    } catch (IOException e) {
+////                        e.printStackTrace();
+////                    }
+////                }
+//
+//                float scale = (float) loadedImage.getHeight() / loadedImage.getWidth();
+//                int screenWidthPixels = DisplayUtils.getScreenWidthPixels(mActivity);
+//                int screenHeightPixels = DisplayUtils.getScreenHeightPixels(mActivity);
+//                int height = (int) (screenWidthPixels * scale);
+//
+//                if (height < screenHeightPixels) {
+//                    height = screenHeightPixels;
 //                }
-
-                float scale = (float) loadedImage.getHeight() / loadedImage.getWidth();
-                int screenWidthPixels = DisplayUtils.getScreenWidthPixels(mActivity);
-                int screenHeightPixels = DisplayUtils.getScreenHeightPixels(mActivity);
-                int height = (int) (screenWidthPixels * scale);
-
-                if (height < screenHeightPixels) {
-                    height = screenHeightPixels;
-                }
-
-                LayoutParams params = ivImageBrowser.getLayoutParams();
-                params.height = height;
-                params.width = screenWidthPixels;
-                ivImageBrowser.setLayoutParams(params);
-
-                ivImageBrowser.setImageBitmap(loadedImage);
-                ivImageBrowser.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mActivity.finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onLoadingCancelled(String imageUri, View view) {
-            }
-        });
+//
+//                LayoutParams params = ivImageBrowser.getLayoutParams();
+//                params.height = height;
+//                params.width = screenWidthPixels;
+//                ivImageBrowser.setLayoutParams(params);
+//
+//                ivImageBrowser.setImageBitmap(loadedImage);
+//                ivImageBrowser.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        mActivity.finish();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onLoadingCancelled(String imageUri, View view) {
+//            }
+//        });
 
         container.addView(view);
         return view;
